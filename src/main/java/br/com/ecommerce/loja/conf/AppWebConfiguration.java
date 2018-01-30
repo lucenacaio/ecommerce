@@ -8,15 +8,17 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
 import br.com.ecommerce.loja.controllers.HomeController;
-import br.com.ecommerce.loja.controllers.ProductsController;
 import br.com.ecommerce.loja.daos.ProductDAO;
+import br.com.ecommerce.loja.infra.FileSaver;
+import br.com.ecommerce.loja.models.ShoppingCart;
 
 @EnableWebMvc
-@ComponentScan(basePackageClasses = { HomeController.class, ProductDAO.class, ProductsController.class })
+@ComponentScan(basePackageClasses = { HomeController.class, ProductDAO.class, FileSaver.class, ShoppingCart.class })
 public class AppWebConfiguration {
 
 	@Bean
@@ -24,6 +26,7 @@ public class AppWebConfiguration {
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".jsp");
+		resolver.setExposedContextBeanNames("shoppingCart");
 		return resolver;
 	}
 
@@ -43,6 +46,11 @@ public class AppWebConfiguration {
 		registrar.setFormatter(new DateFormatter("yyyy-MM-dd"));
 		registrar.registerFormatters(conversionService);
 		return conversionService;
+	}
+	
+	@Bean
+	public MultipartResolver multipartResolver() {
+		return new StandardServletMultipartResolver();
 	}
 
 }
